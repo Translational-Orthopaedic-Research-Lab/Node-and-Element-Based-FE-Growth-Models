@@ -1,14 +1,14 @@
 Project Summary
 ----------------
-This project includes matlab code to perform simulate tissue growth using the FEBio finite element solver. 
+This project includes matlab code to simulate element-based tissue growth using the FEBio finite element solver and a python script to simulate element-based tissue growth using ABAQUS CAE. 
 
-This code was first developed as part of a study that compared node-based and element-based approaches.
+These code were first developed as part of a study that compared node-based and element-based approaches.
 *add citation once paper is published*
 
 
 Required Software
 -----------------
-This program requires the following:
+This program requires the following free software/add-ons for element based modeling:
 
 GIBBON open-source MATLAB add-on: [https://www.gibboncode.org/] 
 Gibbon citation: [https://joss.theoj.org/papers/10.21105/joss.00506]
@@ -17,7 +17,7 @@ FEBio open-source finite element solver: [https://febio.org/]
 FEBio citation: [https://pubmed.ncbi.nlm.nih.gov/22482660/]
 
 
-How to Use
+How to Use 
 -----------
 To run the growth simulation, open and run ElementBasedGrowth.m in MATLAB.
 
