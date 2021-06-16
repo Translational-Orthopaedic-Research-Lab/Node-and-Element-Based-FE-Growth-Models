@@ -2,7 +2,7 @@ Project Summary
 ----------------
 This project includes matlab code to simulate element-based tissue growth using the FEBio finite element solver and a python script to simulate element-based tissue growth using ABAQUS CAE. 
 
-These code were first developed as part of a study that compared node-based and element-based approaches.
+These code were developed as part of a study that compared node-based and element-based approaches.
 *add citation once paper is published*
 
 
