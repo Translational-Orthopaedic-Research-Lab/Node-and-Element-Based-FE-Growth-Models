@@ -17,7 +17,7 @@ Gibbon citation: [https://joss.theoj.org/papers/10.21105/joss.00506]
 
 This program requires the following commercial software for node-based simulations:
 
-ABAQUS CAE : [https://www.3ds.com/products-services/simulia/products/abaqus/abaquscae/]
+ABAQUS CAE: [https://www.3ds.com/products-services/simulia/products/abaqus/abaquscae/]
 
 
 How to Use 
@@ -43,7 +43,7 @@ ABAQUS (Node-based approach)
 ------------------------------
 To run the node-based growth simulation, open the initial ABAQUS CAE file (M1.cae) containing the initial geometry and mesh.
 
-Copy and paste the python script (FILENAME) into the command line in ABAQUS and press enter twice to run.
+Copy and paste the python script (NodeBasedGrowth.py) into the command line in ABAQUS and press enter twice to run.
 
 The program applies expansion between nodes, as a function of normalized position in the y-direction.
 
