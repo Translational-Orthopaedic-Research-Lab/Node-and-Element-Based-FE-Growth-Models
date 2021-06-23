@@ -1,14 +1,16 @@
 %% Spatially varying element-based growth
 % Danielle Howe
 % TORL -- UNC/NCSU BME
-% July 2020
 
-% This file imports a rudiment structure and then runs FEBio to control
-% element-specific growth
-% Applies growth on an element-by-element basis, as a function of
-% normalized position in the y-direction
+% This file imports a rudiment geometry (rudiment.feb) and then runs FEBio 
+% to control element-specific growth.
+
+% This program applies growth on an element-by-element basis, as a function 
+% of normalized position in the y-direction.
+
 % Structure modified from Gibbon: DEMO_spatially_varying_material_parameters
-% References febio_growth.m matlab function and rudiment.feb geometry file
+
+% This code relies on the following matlab function: febio_growth.m 
 
 %%
 clear; close all; clc;
@@ -20,27 +22,27 @@ savePath=fullfile(defaultFolder,'temp');
 % output file name
 modelName=fullfile(savePath,'tempmodel');
 
-%Import Rudiment Geometry- tet4
+%Import Rudiment Geometry- tet4 mesh
 [febXML,nodeStruct,elementCell]=import_FEB('rudiment.feb');
 
-V=nodeStruct.N;
-E=elementCell{1}.E;
+V=nodeStruct.N; % Define nodes
+E=elementCell{1}.E; % Define elements
 
 %% BUILD MODEL
 elementMaterialIndices=[1:1:length(E(:,1))]';
 numel=length(E(:,1));
 
 % SET UP BOUNDARY CONDITIONS
-%List of nodes to fix
+% Establish node sets to fix
 logicBottomNodes=zeros(length(V(:,3)),1);
 logicBottomNodes(1,1)=1;
 if exist('logicBottomNodes','var')>0
 bcFixList=find(logicBottomNodes);
 end
 
-% nodes at the base to be fixed in y-direction
+% Nodes at the base to be fixed in y-direction
 bcFixList=find(V(:,2)==0); 
-% nodes along the y-axis to be fixed in x-,z-directions
+% Nodes along the y-axis to be fixed in x-,z-directions
 bcFixList2=[find(abs(V(:,3))<0.0000001 & abs(V(:,1))<0.0000001)]; 
 
 % FEB Model Info
@@ -49,7 +51,7 @@ febinfo.logname=[modelName,'.log']; %FEBio log file name
 febinfo.version='2.0';
 febinfo.module='solid';
 
-%Control section
+% Control section
 febinfo.Control.AnalysisType='static';
 febinfo.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
@@ -69,6 +71,7 @@ febgeo.Geometry.ElementType={'tet4'}; %The element types
 febgeo.Geometry.ElementMat={elementMaterialIndices};
 febgeo.Geometry.ElementsPartName={'Block'};
 
+% Define node sets
 if exist('logicBottomNodes','var')>0
     febgeo.Geometry.NodeSet{1}.Set=bcFixList;
     febgeo.Geometry.NodeSet{1}.Name='bcFixList';
@@ -77,29 +80,35 @@ if exist('logicBottomNodes','var')>0
 end
 
 %% Multi-step Growth
+
+% Define growth parameters
 gsteps=10; % Number of growth cycles
 kg1=0.24; % Element-based growth coefficient
 % kg2=-0.87;
 % kg3=4.4;
 % kg4=-2.66;
 % kg5=0.14;
+e=0.001; % elastic modulus in MPa
+v=0.49; % poisson's ratio
 phir=0.000001; % phi value
+
 CR=zeros(numel,gsteps);
+CR2=zeros(numel,gsteps);
 CE=zeros(numel,gsteps);
 V_growth=zeros(length(V(:,1)),length(V(1,:)),gsteps+1);
-V_growth(:,:,1)=V; % define node positions 
+V_growth(:,:,1)=V; 
 E_stress_growth=zeros(numel,7,gsteps+1);
 Vol_growth=zeros(numel,2,gsteps+1);
 Vol_growth(:,:,1)=1;
 elecent=zeros(numel,1);
-e=0.001; % elastic modulus in MPa
-v=0.49; % poisson's ratio
 
 for k=1:gsteps
-% Define element y centroid of each element
+% Define element y-centroid of each element
 elecenttemp=zeros(numel,1);
 for x=1:1:numel
-    currleng=max(V_growth(:,2,k)); % normalize to total rudiment height
+    currleng=max(V_growth(:,2,k)); 
+    % prescribe "temperature" for expansion based on y-centroid normalized
+    % to rudiment height
     elecenttemp(x)=mean([V_growth(E(x,1),2,k),V_growth(E(x,2),2,k),V_growth(E(x,3),2,k),V_growth(E(x,4),2,k)])/currleng;
     if elecenttemp(x)>0
         elecent(x)=elecenttemp(x);
@@ -108,10 +117,10 @@ for x=1:1:numel
     end
 end
     
-%Define Cell Growth Model- Load from CR to CR2
-deltCE=kg1*elecent; %define growth as linear function of normalized y-centroid
-%deltCE=kg1*(kg5+kg2*elecent+kg3*elecent.^2+kg4*elecent.^3);
-CR(:,k)=2000;
+% Define Cell Growth Model- Load from CR to CR2
+deltCE=kg1*elecent; % linear function of normalized y-centroid
+% deltCE=kg1*(kg5+kg2*elecent+kg3*elecent.^2+kg4*elecent.^3);
+CR(:,k)=200;
 CE(:,k)=CR(:,k)/(1-phir);
 CR2(:,k)=CE(:,k).*(deltCE+1-phir);
 
@@ -136,7 +145,7 @@ for q=1:1:numel
     febmat.LoadData.LoadCurves.loadPoints{q}=[0 CR(q,k);1 CR2(q,k)];
 end
 
-% runs FEBio throug febio_growth function 
+% run FEBio through febio_growth function 
 [dispnodes,E_stress,Volume]=febio_growth(febinfo,febgeo,febmat);
 V_def=V_growth(:,:,k)+dispnodes; % deformed node positions 
 V_growth(:,:,k+1)=V_def; % update geometry 
@@ -147,8 +156,8 @@ Vol_growth(:,:,k+1)=Volume;
 
 DN_magnitude=sqrt(sum(dispnodes.^2,2));
 
-% print cycle number
-k 
+% Print cycle number
+fprintf(2, 'Completed cycle %d\n', k);
 end
 
 
