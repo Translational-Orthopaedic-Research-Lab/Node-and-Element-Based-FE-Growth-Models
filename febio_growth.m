@@ -43,7 +43,6 @@ for q=1:1:length(febmat.Materials)
     FEB_struct.Materials{q}.Solid{2}.Values=febmat.Materials{q}.Solid{2}.Values;
     FEB_struct.Materials{q}.Solid{2}.PropAttrName=febmat.Materials{q}.Solid{2}.PropAttrName;
     FEB_struct.Materials{q}.Solid{2}.PropAttrVal=febmat.Materials{q}.Solid{2}.PropAttrVal;
-    
 end
 
 %Adding BC information
@@ -53,8 +52,8 @@ end
     FEB_struct.Boundary.Fix{2}.bc='x';
     FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
     FEB_struct.Boundary.Fix{3}.bc='z';
-    FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-    
+    FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;  
+
 %Load curves for CE
 for q=1:1:length(febmat.Materials)
     FEB_struct.LoadData.LoadCurves.id(q)=febmat.LoadData.LoadCurves.id(q);
@@ -170,7 +169,7 @@ FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
-FEBioRunStruct.t_check=0.5; %Time for checking log file (dont set too small)
+FEBioRunStruct.t_check=0.8; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=30; %Max log file checking time
 
